@@ -110,6 +110,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             List<String> npmCommand = new ArrayList<>();
             npmCommand.add("npm");
             npmCommand.add("install");
+            npmCommand.add("--force");
 
             npmInstall.command(npmCommand);
             npmInstall.directory(dir.toFile());
