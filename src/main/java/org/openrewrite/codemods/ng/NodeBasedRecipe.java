@@ -109,7 +109,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             ProcessBuilder npmInstall = new ProcessBuilder();
             List<String> npmCommand = new ArrayList<>();
             npmCommand.add("npm");
-            npmCommand.add("install");
+            npmCommand.add("ci");
             npmCommand.add("--force");
 
             npmInstall.command(npmCommand);

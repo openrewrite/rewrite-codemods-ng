@@ -31,75 +31,75 @@ description: |
 recipeList:
   - org.openrewrite.codemods.ng.ApplyAngularCLI:
       version: "16"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v15
-displayName: Update to Angular v15
-description: |
-  Upgrade to Angular v15
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "15"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v14
-displayName: Update to Angular v14
-description: |
-  Upgrade to Angular v14
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "14"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v13
-displayName: Update to Angular v13
-description: |
-  Upgrade to Angular v13
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "13"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v12
-displayName: Update to Angular v12
-description: |
-  Upgrade to Angular v12
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "12"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v11
-displayName: Update to Angular v11
-description: |
-  Upgrade to Angular v11
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "11"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v10
-displayName: Update to Angular v10
-description: |
-  Upgrade to Angular v10
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "10"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v9
-displayName: Update to Angular v9
-description: |
-  Upgrade to Angular v9
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "9"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.v8
-displayName: Update to Angular v8
-description: |
-  Upgrade to Angular v8
-recipeList:
-  - org.openrewrite.codemods.ng.ApplyAngularCLI:
-      version: "8"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v15
+# displayName: Update to Angular v15
+# description: |
+#   Upgrade to Angular v15
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "15"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v14
+# displayName: Update to Angular v14
+# description: |
+#   Upgrade to Angular v14
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "14"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v13
+# displayName: Update to Angular v13
+# description: |
+#   Upgrade to Angular v13
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "13"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v12
+# displayName: Update to Angular v12
+# description: |
+#   Upgrade to Angular v12
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "12"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v11
+# displayName: Update to Angular v11
+# description: |
+#   Upgrade to Angular v11
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "11"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v10
+# displayName: Update to Angular v10
+# description: |
+#   Upgrade to Angular v10
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "10"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v9
+# displayName: Update to Angular v9
+# description: |
+#   Upgrade to Angular v9
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "9"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.v8
+# displayName: Update to Angular v8
+# description: |
+#   Upgrade to Angular v8
+# recipeList:
+#   - org.openrewrite.codemods.ng.ApplyAngularCLI:
+#       version: "8"
