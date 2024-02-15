@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.codemods;
+package org.openrewrite.codemods.ng;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.openrewrite.test.RewriteTest;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,28 +28,11 @@ import static org.openrewrite.test.SourceSpecs.text;
 public class ApplyCodemodTest implements RewriteTest {
 
     @Test
-    void formatStatement() {
-        rewriteRun(
-          spec -> spec.recipe(new ApplyCodemod("@kevinbarabash/codemods/transforms/array.js", null, null, null)),
-          text(
-            //language=js
-            """
-              _.tail(x)
-              """,
-            """
-              x.slice(1)
-              """,
-            spec -> spec.path("src/Foo.js")
-          )
-        );
-    }
-
-    @Test
     void formatAngularStatement() {
         List<String> args = Arrays.asList("@angular/core@16", "@angular/cli@16");
 
         rewriteRun(
-          spec -> spec.recipe(new ApplyCodemod(null, "@angular/cli/bin/ng.js", null, args)),
+          spec -> spec.recipe(new ApplyAngularCLI(null, "@angular/cli/bin/ng.js", null, args)),
           text(
             //language=js
             """
@@ -250,51 +232,6 @@ public class ApplyCodemodTest implements RewriteTest {
                           
               """,
             spec -> spec.path("angular.json")
-          )
-        );
-    }
-
-    @Test
-    void formatReactStatement() {
-        rewriteRun(
-          spec -> spec.recipe(new ApplyCodemod("react-declassify", "@codemod/cli/bin/codemod --plugin", "**/*.(j|t)sx", null)),
-          text(
-            //language=js
-            """
-              import React from "react";
-                        
-                        export class C extends React.Component {
-                          render() {
-                            const { text, color } = this.props;
-                            return <button style={{ color }} onClick={() => this.onClick()}>{text}</button>;
-                          }
-                        
-                          onClick() {
-                            const { text, handleClick } = this.props;
-                            alert(`${text} was clicked!`);
-                            handleClick();
-                          }
-                        }
-              """,
-            """
-              import React from "react";
-                        
-                        export const C = props => {
-                          const {
-                            text,
-                            color,
-                            handleClick
-                          } = props;
-                        
-                          function onClick() {
-                            alert(`${text} was clicked!`);
-                            handleClick();
-                          }
-                        
-                          return <button style={{ color }} onClick={() => onClick()}>{text}</button>;
-                        };
-              """,
-            spec -> spec.path("src/Foo.js")
           )
         );
     }

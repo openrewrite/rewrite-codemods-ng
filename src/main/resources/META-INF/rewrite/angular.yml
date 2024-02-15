@@ -18,12 +18,10 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.codemods.migrate.angular.v17
 displayName: Update to Angular v17
 description: |
-  Improve regexes by making them shorter, consistent, and safer.
-  See [rule details](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/better-regex.md)
+  Upgrade to Angular v17
 recipeList:
   - org.openrewrite.codemods.migrate.angular.v16
-  - org.openrewrite.codemods.ApplyCodemod:
-      executable: "@angular/cli/bin/ng.js"
+  - org.openrewrite.codemods.ng.ApplyAngularCLI:
       codemodArgs:
         - "@angular/core@17"
         - "@angular/cli@17"
@@ -33,11 +31,9 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.codemods.migrate.angular.v16
 displayName: Update to Angular v16
 description: |
-  Improve regexes by making them shorter, consistent, and safer.
-  See [rule details](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/better-regex.md)
+  Upgrade to Angular v16
 recipeList:
-  - org.openrewrite.codemods.ApplyCodemod:
-      executable: "@angular/cli/bin/ng.js"
+  - org.openrewrite.codemods.ng.ApplyAngularCLI:
       codemodArgs:
         - "@angular/core@16"
         - "@angular/cli@16"

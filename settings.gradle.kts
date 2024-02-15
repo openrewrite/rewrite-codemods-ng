@@ -1,1 +1,1 @@
-rootProject.name = "rewrite-codemods"
+rootProject.name = "rewrite-codemods-ng"
