@@ -1,0 +1,7 @@
+build/
+.gradle/
+.idea/
+out/
+
+node_modules/
+/.working-set/
