@@ -36,12 +36,12 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
 
     @Override
     public String getDisplayName() {
-        return "Applies Angular CLI";
+        return "Upgrade Angular versions";
     }
 
     @Override
     public String getDescription() {
-        return "Applies Angular CLI.";
+        return "Run `ng update` to upgrade Angular CLI and Angular Core to the specified version.";
     }
 
     @Override
