@@ -109,6 +109,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(command);
             builder.directory(dir.toFile());
+            builder.environment().put("NG_DISABLE_VERSION_CHECK", "1");
             builder.environment().put("NODE_PATH", nodeModules.toString());
             builder.environment().put("TERM", "dumb");
 

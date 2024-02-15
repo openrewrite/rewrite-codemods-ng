@@ -19,9 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.openrewrite.test.RewriteTest;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.openrewrite.test.SourceSpecs.text;
 
 @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
@@ -29,10 +26,9 @@ public class ApplyCodemodTest implements RewriteTest {
 
     @Test
     void formatAngularStatement() {
-        List<String> args = Arrays.asList("@angular/core@16", "@angular/cli@16");
 
         rewriteRun(
-          spec -> spec.recipe(new ApplyAngularCLI(args)),
+          spec -> spec.recipe(new ApplyAngularCLI("16")),
           text(
             //language=js
             """

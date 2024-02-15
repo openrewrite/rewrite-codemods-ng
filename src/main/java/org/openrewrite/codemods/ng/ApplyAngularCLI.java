@@ -25,17 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
-
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class ApplyAngularCLI extends NodeBasedRecipe {
-    @Option(displayName = "Angular CLI command arguments",
-            description = "Arguments which get passed to the command.",
-            example = "@angular/core@17",
-            required = false)
+    @Option(displayName = "Angular version",
+            description = "Which version of Angular to upgrade",
+            example = "17")
     @Nullable
-    List<String> codemodArgs;
+    String version;
 
     @Override
     public String getDisplayName() {
@@ -50,11 +47,18 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
     @Override
     protected List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx) {
         List<String> command = new ArrayList<>();
-        command.add("node");
-        command.add("${nodeModules}/@angular/cli/bin/ng.js");
+        command.add("npx");
+        command.add("@angular/cli@${version}");
         command.add("update");
-        command.addAll(Optional.ofNullable(codemodArgs).orElse(emptyList()));
-
+        command.add("@angular/cli@${version}");
+        command.add("@angular/core@${version}");
+        
+        // Replace `${version}` with the `version` value in each command item
+        for (int i = 0; i < command.size(); i++) {
+            String item = command.get(i);
+            command.set(i, item.replace("${version}", Optional.ofNullable(version).orElse("latest")));
+        }
+        
         return command;
     }
 }
