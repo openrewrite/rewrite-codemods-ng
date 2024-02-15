@@ -106,6 +106,19 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${parser}", acc.parser()));
         Path out = null, err = null;
         try {
+            ProcessBuilder npmInstall = new ProcessBuilder();
+            npmInstall.command("npm","install");
+            npmInstall.directory(dir.toFile());
+            npmInstall.environment().put("NG_DISABLE_VERSION_CHECK", "1");
+            npmInstall.environment().put("NODE_PATH", nodeModules.toString());
+            npmInstall.environment().put("TERM", "dumb");
+            Process npmInstallProcess = npmInstall.start();
+            npmInstallProcess.waitFor(5, TimeUnit.MINUTES);
+            if (npmInstallProcess.exitValue() != 0) {
+                String error = "Command failed: npm install";
+                throw new RuntimeException(error);
+            }
+
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(command);
             builder.directory(dir.toFile());
