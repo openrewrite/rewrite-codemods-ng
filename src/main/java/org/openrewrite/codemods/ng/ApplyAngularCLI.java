@@ -44,21 +44,15 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
 
     @Override
     public String getDescription() {
-        return "Applies Angular CLI";
+        return "Applies Angular CLI.";
     }
 
     @Override
     protected List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx) {
         List<String> command = new ArrayList<>();
-
-        command.add("npm");
-        command.add("install");
-        command.add("&&");
         command.add("node");
         command.add("${nodeModules}/@angular/cli/bin/ng.js");
         command.add("update");
-
-
         command.addAll(Optional.ofNullable(codemodArgs).orElse(emptyList()));
 
         return command;
