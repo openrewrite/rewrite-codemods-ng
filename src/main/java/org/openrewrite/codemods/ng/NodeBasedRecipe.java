@@ -104,18 +104,32 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${nodeModules}", nodeModules.toString())
                 .replace("${repoDir}", ".")
                 .replace("${parser}", acc.parser()));
-        Path out = null, err = null;
+        Path out = null, err = null, npmOut = null, npmErr = null;
         try {
             ProcessBuilder npmInstall = new ProcessBuilder();
-            npmInstall.command("npm","install");
+            List<String> npmCommand = new ArrayList<>();
+            npmCommand.add("npm");
+            npmCommand.add("install");
+
+            npmInstall.command(npmCommand);
             npmInstall.directory(dir.toFile());
             npmInstall.environment().put("NG_DISABLE_VERSION_CHECK", "1");
             npmInstall.environment().put("NODE_PATH", nodeModules.toString());
             npmInstall.environment().put("TERM", "dumb");
+            npmOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "npm", null);
+            npmErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "npm", null);
+            npmInstall.redirectOutput(ProcessBuilder.Redirect.to(npmOut.toFile()));
+            npmInstall.redirectError(ProcessBuilder.Redirect.to(npmErr.toFile()));
+            
+
             Process npmInstallProcess = npmInstall.start();
             npmInstallProcess.waitFor(5, TimeUnit.MINUTES);
+
             if (npmInstallProcess.exitValue() != 0) {
-                String error = "Command failed: npm install";
+                String error = "Command failed:" + String.join(" ", npmCommand);
+                if (Files.exists(npmErr)) {
+                    error += "\n" + new String(Files.readAllBytes(npmErr));
+                }
                 throw new RuntimeException(error);
             }
 
@@ -160,6 +174,14 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             if (err != null) {
                 //noinspection ResultOfMethodCallIgnored
                 err.toFile().delete();
+            }
+            if (npmOut != null) {
+                //noinspection ResultOfMethodCallIgnored
+                npmOut.toFile().delete();
+            }
+            if (npmErr != null) {
+                //noinspection ResultOfMethodCallIgnored
+                npmErr.toFile().delete();
             }
         }
     }
