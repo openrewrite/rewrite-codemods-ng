@@ -32,7 +32,7 @@ public class ApplyCodemodTest implements RewriteTest {
         List<String> args = Arrays.asList("@angular/core@16", "@angular/cli@16");
 
         rewriteRun(
-          spec -> spec.recipe(new ApplyAngularCLI(null, "@angular/cli/bin/ng.js", null, args)),
+          spec -> spec.recipe(new ApplyAngularCLI(args)),
           text(
             //language=js
             """
