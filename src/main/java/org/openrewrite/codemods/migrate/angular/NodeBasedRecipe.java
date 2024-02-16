@@ -106,7 +106,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${repoDir}", ".")
                 .replace("${parser}", acc.parser()));
 
-        String angularCliVersion = command.remove(0);
+        String angularCliVersion = getAngularCliPackage(acc, ctx);
         List<String> npmInstallCommand = new ArrayList<>();
         npmInstallCommand.add("npm");
         npmInstallCommand.add("install");
@@ -173,6 +173,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
     protected abstract List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx);
     // abstract method to return a boolean value for whether to use nvm-exec ahead of commands
     protected abstract boolean useNvmExec(Accumulator acc, ExecutionContext ctx);
+    protected abstract String getAngularCliPackage(Accumulator acc, ExecutionContext ctx);
 
     protected void processOutput(Path out, Accumulator acc, ExecutionContext ctx) {
     }
