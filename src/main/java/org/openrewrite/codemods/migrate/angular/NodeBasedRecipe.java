@@ -118,7 +118,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 npmCommand.add("nvm-exec");
             }
             npmCommand.add("npm");
-            npmCommand.add("ci");
+            npmCommand.add("install");
             npmCommand.add("--force");
 
             npmInstall.command(npmCommand);
