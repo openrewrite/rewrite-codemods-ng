@@ -28,7 +28,7 @@ public class ApplyAngularCLITest implements RewriteTest {
   void formatAngularStatement() {
 
     rewriteRun(
-        spec -> spec.recipe(new ApplyAngularCLI("16")),
+        spec -> spec.recipe(new ApplyAngularCLI("8")),
         text(
             // language=js
             """

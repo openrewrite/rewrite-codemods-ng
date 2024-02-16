@@ -96,8 +96,14 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         Path nodeModules = RecipeResources.from(getClass()).init(ctx);
 
         List<String> command = getNpmCommand(acc, ctx);
+        boolean shouldUseNvm = useNvmExec(acc, ctx);
+        
         if (command.isEmpty()) {
             return;
+        }
+
+        if (shouldUseNvm) {
+            command.add(0, "nvm-exec");
         }
 
         command.replaceAll(s -> s
@@ -108,6 +114,9 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         try {
             ProcessBuilder npmInstall = new ProcessBuilder();
             List<String> npmCommand = new ArrayList<>();
+            if (shouldUseNvm) {
+                npmCommand.add("nvm-exec");
+            }
             npmCommand.add("npm");
             npmCommand.add("ci");
             npmCommand.add("--force");
@@ -188,6 +197,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
     }
 
     protected abstract List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx);
+    // abstract method to return a boolean value for whether or not to use nvm-exec ahead of commands
+    protected abstract boolean useNvmExec(Accumulator acc, ExecutionContext ctx);
 
     protected void processOutput(Path out, Accumulator acc, ExecutionContext ctx) {
     }

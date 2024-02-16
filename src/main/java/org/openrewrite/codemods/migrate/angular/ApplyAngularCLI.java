@@ -61,4 +61,11 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
         
         return command;
     }
+
+    @Override
+    protected boolean useNvmExec(Accumulator acc, ExecutionContext ctx) {
+        // parse the version to an integer
+        // if the version is below 15, use nvm exec
+        return Integer.parseInt(Optional.ofNullable(version).orElse("0")) < 15;
+    }
 }
