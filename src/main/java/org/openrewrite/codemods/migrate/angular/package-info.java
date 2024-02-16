@@ -15,7 +15,7 @@
  */
 @NonNullApi
 @NonNullFields
-package org.openrewrite.codemods.ng;
+package org.openrewrite.codemods.migrate.angular;
 
 import org.openrewrite.internal.lang.NonNullApi;
 import org.openrewrite.internal.lang.NonNullFields;
