@@ -54,10 +54,7 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
         command.add("@angular/core@${version}");
         
         // Replace `${version}` with the `version` value in each command item
-        for (int i = 0; i < command.size(); i++) {
-            String item = command.get(i);
-            command.set(i, item.replace("${version}", Optional.ofNullable(version).orElse("latest")));
-        }
+        command.replaceAll(s -> s.replace("${version}", Optional.ofNullable(version).orElse("latest")));
         
         return command;
     }

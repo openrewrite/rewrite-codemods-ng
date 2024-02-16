@@ -94,110 +94,83 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
     private void runNode(Accumulator acc, ExecutionContext ctx) {
         Path dir = acc.getDirectory();
         Path nodeModules = RecipeResources.from(getClass()).init(ctx);
-
+        boolean useNvmExec = useNvmExec(acc, ctx);
         List<String> command = getNpmCommand(acc, ctx);
-        boolean shouldUseNvm = useNvmExec(acc, ctx);
-        
+
         if (command.isEmpty()) {
             return;
-        }
-
-        if (shouldUseNvm) {
-            command.add(0, "nvm-exec");
         }
 
         command.replaceAll(s -> s
                 .replace("${nodeModules}", nodeModules.toString())
                 .replace("${repoDir}", ".")
                 .replace("${parser}", acc.parser()));
-        Path out = null, err = null, npmOut = null, npmErr = null;
+
+        List<String> npmInstallCommand = new ArrayList<>();
+        npmInstallCommand.add("npm");
+        npmInstallCommand.add("install");
+        npmInstallCommand.add("--force");
+
         try {
-            ProcessBuilder npmInstall = new ProcessBuilder();
-            List<String> npmCommand = new ArrayList<>();
-            if (shouldUseNvm) {
-                npmCommand.add("nvm-exec");
-            }
-            npmCommand.add("npm");
-            npmCommand.add("install");
-            npmCommand.add("--force");
+            if (useNvmExec) {
+                // older versions may require installing the angular cli globally to avoid issues with `npx`
+                runCommand(Arrays.asList("nvm-exec", "npm", "install", "--global", command.get(1)), dir, nodeModules, ctx);
 
-            npmInstall.command(npmCommand);
-            npmInstall.directory(dir.toFile());
-            npmInstall.environment().put("NG_DISABLE_VERSION_CHECK", "1");
-            npmInstall.environment().put("NODE_PATH", nodeModules.toString());
-            npmInstall.environment().put("TERM", "dumb");
-            npmOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "npm", null);
-            npmErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "npm", null);
-            npmInstall.redirectOutput(ProcessBuilder.Redirect.to(npmOut.toFile()));
-            npmInstall.redirectError(ProcessBuilder.Redirect.to(npmErr.toFile()));
-            
-
-            Process npmInstallProcess = npmInstall.start();
-            npmInstallProcess.waitFor(5, TimeUnit.MINUTES);
-
-            if (npmInstallProcess.exitValue() != 0) {
-                String error = "Command failed:" + String.join(" ", npmCommand);
-                if (Files.exists(npmErr)) {
-                    error += "\n" + new String(Files.readAllBytes(npmErr));
-                }
-                throw new RuntimeException(error);
+                // prefix the command with `nvm-exec` to ensure the correct node version is used
+                npmInstallCommand.add(0, "nvm-exec");
+                command.add(0, "nvm-exec");
             }
 
+            runCommand(npmInstallCommand, dir, nodeModules, ctx);
+            Path out = runCommand(command, dir, nodeModules, ctx);
+            processOutput(out, acc, ctx);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Path runCommand(List<String> command, Path dir, Path nodeModules, ExecutionContext ctx)  {
+        Path stdOut = null, stdErr = null;
+        try {
             ProcessBuilder builder = new ProcessBuilder();
             builder.command(command);
             builder.directory(dir.toFile());
             builder.environment().put("NG_DISABLE_VERSION_CHECK", "1");
+            builder.environment().put("NG_CLI_ANALYTICS", "false");
             builder.environment().put("NODE_PATH", nodeModules.toString());
             builder.environment().put("TERM", "dumb");
 
-            out = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
-            err = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
-            builder.redirectOutput(ProcessBuilder.Redirect.to(out.toFile()));
-            builder.redirectError(ProcessBuilder.Redirect.to(err.toFile()));
+            stdOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
+            stdErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
+            builder.redirectOutput(ProcessBuilder.Redirect.to(stdOut.toFile()));
+            builder.redirectError(ProcessBuilder.Redirect.to(stdErr.toFile()));
 
             Process process = builder.start();
             process.waitFor(5, TimeUnit.MINUTES);
             if (process.exitValue() != 0) {
-                String error = "Command failed: " + String.join(" ", command);
-                if (Files.exists(err)) {
-                    error += "\n" + new String(Files.readAllBytes(err));
+                String error = "Command failed:" + String.join(" ", command);
+                if (Files.exists(stdErr)) {
+                    error += "\n" + new String(Files.readAllBytes(stdErr));
                 }
                 throw new RuntimeException(error);
-            } else {
-                for (Map.Entry<Path, Long> entry : acc.beforeModificationTimestamps.entrySet()) {
-                    Path path = entry.getKey();
-                    if (!Files.exists(path) || Files.getLastModifiedTime(path).toMillis() > entry.getValue()) {
-                        acc.modified(path);
-                    }
-                }
-                processOutput(out, acc, ctx);
             }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        } catch (InterruptedException e) {
+            return stdOut;
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            if (out != null) {
+            if (stdOut != null) {
                 //noinspection ResultOfMethodCallIgnored
-                out.toFile().delete();
+                stdOut.toFile().delete();
             }
-            if (err != null) {
+            if (stdErr != null) {
                 //noinspection ResultOfMethodCallIgnored
-                err.toFile().delete();
-            }
-            if (npmOut != null) {
-                //noinspection ResultOfMethodCallIgnored
-                npmOut.toFile().delete();
-            }
-            if (npmErr != null) {
-                //noinspection ResultOfMethodCallIgnored
-                npmErr.toFile().delete();
+                stdErr.toFile().delete();
             }
         }
     }
 
     protected abstract List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx);
-    // abstract method to return a boolean value for whether or not to use nvm-exec ahead of commands
+    // abstract method to return a boolean value for whether to use nvm-exec ahead of commands
     protected abstract boolean useNvmExec(Accumulator acc, ExecutionContext ctx);
 
     protected void processOutput(Path out, Accumulator acc, ExecutionContext ctx) {
