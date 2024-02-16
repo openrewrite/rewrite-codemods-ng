@@ -60,7 +60,7 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
 
     @Override
     protected String getAngularCliPackage(Accumulator acc, ExecutionContext ctx) {
-        return "@angular/cli@${version}";
+        return "@angular/cli@${version}".replace("${version}", Optional.ofNullable(version).orElse("latest"));
     }
 
     @Override
