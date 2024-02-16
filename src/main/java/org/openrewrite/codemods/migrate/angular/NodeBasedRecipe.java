@@ -115,7 +115,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         try {
             if (useNvmExec) {
                 // older versions may require installing the angular cli globally to avoid issues with `npx`
-                runCommand(Arrays.asList("nvm-exec", "npm", "install", "--global", angularCliVersion), dir, nodeModules, ctx);
+                runCommand(Arrays.asList("nvm-exec", "npm", "install", angularCliVersion), dir, nodeModules, ctx);
 
                 // prefix the command with `nvm-exec` to ensure the correct node version is used
                 npmInstallCommand.add(0, "nvm-exec");
