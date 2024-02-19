@@ -106,12 +106,15 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             .replace("${repoDir}", ".")
             .replace("${parser}", acc.parser()));
 
+        String angularCliVersion = getAngularCliPackage(acc, ctx);
         List<String> npmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false"));       
         List<String> installNodeGyp = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10"));
         List<String> installNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2"));
 
         try {
             if (useNvmExec) {
+                runCommand(Arrays.asList("nvm-exec", "npm", "install", angularCliVersion, "--force", "--global"), dir, nodeModules, ctx);
+
                 installNodeGyp.add(0, "nvm-exec");
                 installNan.add(0, "nvm-exec");
                 npmInstallCommand.add(0, "nvm-exec");
