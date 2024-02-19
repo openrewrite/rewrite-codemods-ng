@@ -131,6 +131,13 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
             // run `ng update` command
             Path out = runCommand(command, dir, nodeModules, ctx);
+
+            for (Map.Entry<Path, Long> entry : acc.beforeModificationTimestamps.entrySet()) {
+                Path path = entry.getKey();
+                if (!Files.exists(path) || Files.getLastModifiedTime(path).toMillis() > entry.getValue()) {
+                    acc.modified(path);
+                }
+            }
             processOutput(out, acc, ctx);
         } catch (Exception e) {
             throw new RuntimeException(e);
