@@ -138,7 +138,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             builder.directory(dir.toFile());
             builder.environment().put("NG_DISABLE_VERSION_CHECK", "1");
             builder.environment().put("NG_CLI_ANALYTICS", "false");
-            builder.environment().put("NODE_PATH", nodeModules.toString());
+            // builder.environment().put("NODE_PATH", nodeModules.toString());
             builder.environment().put("TERM", "dumb");
 
             stdOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
