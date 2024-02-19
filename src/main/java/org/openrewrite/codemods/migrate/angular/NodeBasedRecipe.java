@@ -110,20 +110,20 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${parser}", acc.parser()));
 
         String angularCliVersion = getAngularCliPackage(acc, ctx);
-        List<String> prefixedInstallNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--package-lock=false", "--ignore-script", "node-gyp@10", "nan@2"));
+        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev", "node-gyp@10", "nan@2"));
         List<String> prefixedInstallAngularCli = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--ignore-scripts", angularCliVersion));
         List<String> localNpmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--ignore-scripts"));
 
         try {
             if (useNvmExec) {
-                prefixedInstallNodeGypAndNan.add(0, "nvm-exec");
+                installNodeGypAndNan.add(0, "nvm-exec");
                 prefixedInstallAngularCli.add(0, "nvm-exec");
                 localNpmInstallCommand.add(0, "nvm-exec");
                 command.add(0, "nvm-exec");
             }
 
             // Install node-gyp to avoid issues with `npx`
-            runCommand(prefixedInstallNodeGypAndNan, dir, nodeModules, ctx);
+            runCommand(installNodeGypAndNan, dir, nodeModules, ctx);
             // install angular cli in the project
             runCommand(prefixedInstallAngularCli, dir, nodeModules, ctx);
             // install the project dependencies
