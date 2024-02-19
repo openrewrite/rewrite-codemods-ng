@@ -58,7 +58,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             @Override
             public @Nullable Tree visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof SourceFile && !(tree instanceof Quark) && !(tree instanceof ParseError) &&
-                    !tree.getClass().getName().equals("org.openrewrite.java.tree.J$CompilationUnit")) {
+                        !tree.getClass().getName().equals("org.openrewrite.java.tree.J$CompilationUnit")) {
                     SourceFile sourceFile = (SourceFile) tree;
                     String fileName = sourceFile.getSourcePath().getFileName().toString();
                     if (fileName.indexOf('.') > 0) {
@@ -68,7 +68,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
                     // only extract initial source files for first codemod recipe
                     if (Objects.equals(ctx.getMessage(FIRST_RECIPE), ctx.getCycleDetails().getRecipePosition())) {
-                        // FIXME filter out more source types; possibly only write plain text, json, and yaml?
+                        // FIXME filter out more source types; possibly only write plain text, json, and
+                        // yaml?
                         acc.writeSource(sourceFile);
                     }
                 }
@@ -80,7 +81,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
     @Override
     public Collection<? extends SourceFile> generate(Accumulator acc, ExecutionContext ctx) {
         Path previous = ctx.getMessage(PREVIOUS_RECIPE);
-        if (previous != null && !Objects.equals(ctx.getMessage(FIRST_RECIPE), ctx.getCycleDetails().getRecipePosition())) {
+        if (previous != null
+                && !Objects.equals(ctx.getMessage(FIRST_RECIPE), ctx.getCycleDetails().getRecipePosition())) {
             acc.copyFromPrevious(previous);
         }
 
@@ -102,30 +104,34 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         }
 
         command.replaceAll(s -> s
-            .replace("${nodeModules}", nodeModules.toString())
-            .replace("${repoDir}", ".")
-            .replace("${parser}", acc.parser()));
+                .replace("${nodeModules}", nodeModules.toString())
+                .replace("${repoDir}", ".")
+                .replace("${parser}", acc.parser()));
 
         String angularCliVersion = getAngularCliPackage(acc, ctx);
-        List<String> npmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false"));       
-        List<String> installNodeGyp = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10"));
-        List<String> installNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2"));
+        List<String> npmInstallCommand = new ArrayList<>(
+                Arrays.asList("npm", "install", "--force", "--package-lock=false"));
+        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--global",
+                "--package-lock=false", "--ignore-script", "node-gyp@10", "nan@2"));
+        List<String> installAngularCli = new ArrayList<>(
+                Arrays.asList("npm", "install", angularCliVersion, "--force", "--ignore-scripts"));
 
         try {
             if (useNvmExec) {
-                runCommand(Arrays.asList("nvm-exec", "npm", "install", angularCliVersion, "--force", "--global"), dir, nodeModules, ctx);
-
-                installNodeGyp.add(0, "nvm-exec");
-                installNan.add(0, "nvm-exec");
+                installAngularCli.add(0, "nvm-exec");
+                installNodeGypAndNan.add(0, "nvm-exec");
                 npmInstallCommand.add(0, "nvm-exec");
                 command.add(0, "nvm-exec");
             }
 
             // Install node-gyp globally to avoid issues with `npx`
-            runCommand(installNodeGyp, dir, nodeModules, ctx);
-            runCommand(installNan, dir, nodeModules, ctx);
+            runCommand(installNodeGypAndNan, dir, nodeModules, ctx);
+            // install angular cli in the project
+            runCommand(installAngularCli, dir, nodeModules, ctx);
+            // install the project dependencies
             runCommand(npmInstallCommand, dir, nodeModules, ctx);
 
+            // run `ng update` command
             Path out = runCommand(command, dir, nodeModules, ctx);
             processOutput(out, acc, ctx);
         } catch (Exception e) {
@@ -133,7 +139,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         }
     }
 
-    private Path runCommand(List<String> command, Path dir, Path nodeModules, ExecutionContext ctx)  {
+    private Path runCommand(List<String> command, Path dir, Path nodeModules, ExecutionContext ctx) {
         Path stdOut = null, stdErr = null;
         try {
             ProcessBuilder builder = new ProcessBuilder();
@@ -144,8 +150,10 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             builder.environment().put("NODE_PATH", nodeModules.toString());
             builder.environment().put("TERM", "dumb");
 
-            stdOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
-            stdErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node", null);
+            stdOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node",
+                    null);
+            stdErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node",
+                    null);
             builder.redirectOutput(ProcessBuilder.Redirect.to(stdOut.toFile()));
             builder.redirectError(ProcessBuilder.Redirect.to(stdErr.toFile()));
 
@@ -163,19 +171,22 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             throw new RuntimeException(e);
         } finally {
             if (stdOut != null) {
-                //noinspection ResultOfMethodCallIgnored
+                // noinspection ResultOfMethodCallIgnored
                 stdOut.toFile().delete();
             }
             if (stdErr != null) {
-                //noinspection ResultOfMethodCallIgnored
+                // noinspection ResultOfMethodCallIgnored
                 stdErr.toFile().delete();
             }
         }
     }
 
     protected abstract List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx);
-    // abstract method to return a boolean value for whether to use nvm-exec ahead of commands
+
+    // abstract method to return a boolean value for whether to use nvm-exec ahead
+    // of commands
     protected abstract boolean useNvmExec(Accumulator acc, ExecutionContext ctx);
+
     protected abstract String getAngularCliPackage(Accumulator acc, ExecutionContext ctx);
 
     protected void processOutput(Path out, Accumulator acc, ExecutionContext ctx) {
@@ -209,8 +220,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 before.getFileAttributes(),
                 null,
                 acc.content(before),
-                emptyList()
-        );
+                emptyList());
     }
 
     @ToString
@@ -268,7 +278,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 Files.createDirectories(path.getParent());
                 PrintOutputCapture.MarkerPrinter markerPrinter = new PrintOutputCapture.MarkerPrinter() {
                 };
-                Path written = Files.write(path, tree.printAll(new PrintOutputCapture<>(0, markerPrinter)).getBytes(tree.getCharset() != null ? tree.getCharset() : StandardCharsets.UTF_8));
+                Path written = Files.write(path, tree.printAll(new PrintOutputCapture<>(0, markerPrinter))
+                        .getBytes(tree.getCharset() != null ? tree.getCharset() : StandardCharsets.UTF_8));
                 beforeModificationTimestamps.put(written, Files.getLastModifiedTime(written).toMillis());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -286,8 +297,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         public String content(SourceFile tree) {
             try {
                 Path path = resolvedPath(tree);
-                return tree.getCharset() != null ? new String(Files.readAllBytes(path), tree.getCharset()) :
-                        new String(Files.readAllBytes(path));
+                return tree.getCharset() != null ? new String(Files.readAllBytes(path), tree.getCharset())
+                        : new String(Files.readAllBytes(path));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -303,7 +314,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
         @Nullable
         public <T> T getData(String key) {
-            //noinspection unchecked
+            // noinspection unchecked
             return (T) data.get(key);
         }
     }
