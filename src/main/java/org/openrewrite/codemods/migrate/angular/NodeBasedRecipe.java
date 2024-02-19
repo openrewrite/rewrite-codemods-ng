@@ -110,7 +110,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${parser}", acc.parser()));
 
         String angularCliVersion = getAngularCliPackage(acc, ctx);
-        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev", "node-gyp@10", "nan@2"));
+        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--ignore-script", "node-gyp@10", "nan@2"));
         List<String> prefixedInstallAngularCli = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--ignore-scripts", angularCliVersion));
         List<String> localNpmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--ignore-scripts"));
 
@@ -139,7 +139,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 }
             }
             processOutput(out, acc, ctx);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
