@@ -48,8 +48,10 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
     protected List<String> getNpmCommand(Accumulator acc, ExecutionContext ctx) {
         List<String> command = new ArrayList<>();
         // command.add("ng");
-        command.add("npx");
-        command.add(getAngularCliPackage(acc, ctx));
+        // command.add("npx");
+        // command.add(getAngularCliPackage(acc, ctx));
+        command.add("node");
+        command.add("${nodeModules}/node_modules/.bin/ng");
         command.add("update");
         command.add(getAngularCliPackage(acc, ctx));
         command.add("@angular/core@${version}");
