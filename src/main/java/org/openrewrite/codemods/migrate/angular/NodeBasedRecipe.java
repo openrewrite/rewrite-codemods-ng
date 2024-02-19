@@ -95,7 +95,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
     private void runNode(Accumulator acc, ExecutionContext ctx) {
         Path dir = acc.getDirectory();
-        Path nodeModules = RecipeResources.from(getClass()).init(ctx);
+        // Path nodeModules = RecipeResources.from(getClass()).init(ctx);
+        Path nodeModules = createDirectory(ctx, "recipe-run-modules");
         boolean useNvmExec = useNvmExec(acc, ctx);
         List<String> command = getNpmCommand(acc, ctx);
 
@@ -109,12 +110,9 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${parser}", acc.parser()));
 
         String angularCliVersion = getAngularCliPackage(acc, ctx);
-        List<String> npmInstallCommand = new ArrayList<>(
-                Arrays.asList("npm", "install", "--force", "--package-lock=false"));
-        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force",
-                "--package-lock=false", "--ignore-script", "node-gyp@10", "nan@2"));
-        List<String> installAngularCli = new ArrayList<>(
-                Arrays.asList("npm", "install", angularCliVersion, "--force", "--ignore-scripts"));
+        List<String> npmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--package-lock=false"));
+        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), "--force", "--package-lock=false", "--ignore-script", "node-gyp@10", "nan@2"));
+        List<String> installAngularCli = new ArrayList<>(Arrays.asList("npm", "install", "--prefix", nodeModules.toString(), angularCliVersion, "--force", "--ignore-scripts"));
 
         try {
             if (useNvmExec) {
