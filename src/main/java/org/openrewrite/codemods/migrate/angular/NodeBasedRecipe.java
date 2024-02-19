@@ -111,6 +111,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         npmInstallCommand.add("npm");
         npmInstallCommand.add("install");
         npmInstallCommand.add("--force");
+        npmInstallCommand.add("--package-lock=false");
 
         try {
             if (useNvmExec) {
@@ -122,7 +123,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 command.add(0, "nvm-exec");
             }
 
-            runCommand(npmInstallCommand, dir, nodeModules, ctx);
+            // runCommand(npmInstallCommand, dir, nodeModules, ctx);
             Path out = runCommand(command, dir, nodeModules, ctx);
             processOutput(out, acc, ctx);
         } catch (Exception e) {
