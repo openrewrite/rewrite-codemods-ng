@@ -36,7 +36,7 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.codemods.migrate.angular.directiveTransform
 displayName: Transform Angular directives
 description: |
-  Upgrade to Angular v15
+  Transform Angular directives
 recipeList:
   - org.openrewrite.codemods.ApplyCodemod:
       transform: "trefactor/src/directive-transform/index.ts"
@@ -48,10 +48,10 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.codemods.migrate.angular.decoratorTransform
 displayName: Transform Angular decorators
 description: |
-  Upgrade to Angular v15
+  Transform Angular decorators
 recipeList:
   - org.openrewrite.codemods.ApplyCodemod:
-      transform: "trefactor/src/decorator-transform/index.ts"
+      transform: "trefactor/src/decorator-transform/module.ts"
       codemodArgs:
         - "--extensions=*.ts"
         - "--parser=ts"
