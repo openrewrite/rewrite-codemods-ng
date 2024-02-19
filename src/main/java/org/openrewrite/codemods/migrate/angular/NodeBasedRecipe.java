@@ -111,7 +111,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         String angularCliVersion = getAngularCliPackage(acc, ctx);
         List<String> npmInstallCommand = new ArrayList<>(
                 Arrays.asList("npm", "install", "--force", "--package-lock=false"));
-        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--global",
+        List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--force",
                 "--package-lock=false", "--ignore-script", "node-gyp@10", "nan@2"));
         List<String> installAngularCli = new ArrayList<>(
                 Arrays.asList("npm", "install", angularCliVersion, "--force", "--ignore-scripts"));
@@ -124,7 +124,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 command.add(0, "nvm-exec");
             }
 
-            // Install node-gyp globally to avoid issues with `npx`
+            // Install node-gyp to avoid issues with `npx`
             runCommand(installNodeGypAndNan, dir, nodeModules, ctx);
             // install angular cli in the project
             runCommand(installAngularCli, dir, nodeModules, ctx);
