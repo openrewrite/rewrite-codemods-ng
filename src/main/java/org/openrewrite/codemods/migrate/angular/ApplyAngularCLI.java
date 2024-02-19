@@ -50,7 +50,7 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
         command.add("npx");
         command.add(getAngularCliPackage(acc, ctx));
         command.add("update");
-        command.add(getAngularCliPackage(acc, ctx));
+        // command.add(getAngularCliPackage(acc, ctx));
         command.add("@angular/core@${version}");
         
         // Replace `${version}` with the `version` value in each command item
