@@ -119,10 +119,17 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 runCommand(Arrays.asList("nvm-exec", "npm", "install", angularCliVersion, "--force", "--global"), dir, nodeModules, ctx);
                 // Install node-gyp globally to avoid issues with `npx`
                 runCommand(Arrays.asList("nvm-exec", "npm", "install", "node-gyp", "--force", "--global"), dir, nodeModules, ctx);
+                runCommand(Arrays.asList("nvm-exec", "npm","explore","npm/node_modules/@npmcli/run-script","-g","--","npm_config_global=false","npm","install","node-gyp@latest"), dir, nodeModules, ctx);
 
                 // prefix the command with `nvm-exec` to ensure the correct node version is used
                 npmInstallCommand.add(0, "nvm-exec");
                 command.add(0, "nvm-exec");
+            } else {
+                // upgrade internal npm node-gyp to latest
+                // @see https://github.com/nodejs/node-gyp/blob/main/docs/Updating-npm-bundled-node-gyp.md
+                runCommand(Arrays.asList("npm","explore","npm/node_modules/@npmcli/run-script","-g","--","npm_config_global=false","npm","install","node-gyp@latest"), dir, nodeModules, ctx);
+                // Install node-gyp globally to avoid issues with `npx`
+                runCommand(Arrays.asList("npm", "install", "node-gyp@latest", "--global"), dir, nodeModules, ctx);
             }
 
             runCommand(npmInstallCommand, dir, nodeModules, ctx);
