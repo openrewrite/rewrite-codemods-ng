@@ -102,32 +102,27 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         }
 
         command.replaceAll(s -> s
-                .replace("${nodeModules}", nodeModules.toString())
-                .replace("${repoDir}", ".")
-                .replace("${parser}", acc.parser()));
+            .replace("${nodeModules}", nodeModules.toString())
+            .replace("${repoDir}", ".")
+            .replace("${parser}", acc.parser()));
 
-        String angularCliVersion = getAngularCliPackage(acc, ctx);
-        List<String> npmInstallCommand = new ArrayList<>();
-        npmInstallCommand.add("npm");
-        npmInstallCommand.add("install");
-        npmInstallCommand.add("--force");
-        npmInstallCommand.add("--package-lock=false");
+        List<String> npmInstallCommand = Arrays.asList("npm", "install", "--force", "--package-lock=false");       
+        List<String> installNodeGyp = Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10");
+        List<String> installNan = Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2");
 
         try {
             if (useNvmExec) {
-                // older versions may require installing the angular cli globally to avoid issues with `npx`
-                runCommand(Arrays.asList("nvm-exec", "npm", "install", angularCliVersion, "--force", "--global"), dir, nodeModules, ctx);
-
-                // prefix the command with `nvm-exec` to ensure the correct node version is used
+                installNodeGyp.add(0, "nvm-exec");
+                installNan.add(0, "nvm-exec");
                 npmInstallCommand.add(0, "nvm-exec");
                 command.add(0, "nvm-exec");
             }
-            
-            // Install node-gyp globally to avoid issues with `npx`
-            runCommand(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10"), dir, nodeModules, ctx);
-            runCommand(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2"), dir, nodeModules, ctx);
 
+            // Install node-gyp globally to avoid issues with `npx`
+            runCommand(installNodeGyp, dir, nodeModules, ctx);
+            runCommand(installNan, dir, nodeModules, ctx);
             runCommand(npmInstallCommand, dir, nodeModules, ctx);
+
             Path out = runCommand(command, dir, nodeModules, ctx);
             processOutput(out, acc, ctx);
         } catch (Exception e) {
