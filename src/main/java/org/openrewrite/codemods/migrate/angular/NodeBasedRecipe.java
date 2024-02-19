@@ -106,9 +106,9 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             .replace("${repoDir}", ".")
             .replace("${parser}", acc.parser()));
 
-        List<String> npmInstallCommand = Arrays.asList("npm", "install", "--force", "--package-lock=false");       
-        List<String> installNodeGyp = Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10");
-        List<String> installNan = Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2");
+        List<String> npmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false"));       
+        List<String> installNodeGyp = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","node-gyp@10"));
+        List<String> installNan = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--package-lock=false", "--ignore-script", "--save-dev","nan@2"));
 
         try {
             if (useNvmExec) {
