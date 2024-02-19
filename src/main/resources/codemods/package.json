@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@angular/cli": "17.2.0",
-    "@angular/core": "17.2.0"
+    "@angular/cli": "8.3.29",
+    "@angular/core": "8.2.14"
   }
 }
