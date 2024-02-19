@@ -124,8 +124,8 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             }
             
             // Install node-gyp globally to avoid issues with `npx`
-            runCommand(Arrays.asList("npm", "install", "--save-dev","nan"), dir, nodeModules, ctx);
-            runCommand(Arrays.asList("npm", "install", "--save-dev","node-gyp@latest"), dir, nodeModules, ctx);
+            runCommand(Arrays.asList("npm", "install", "--force", "--save-dev","nan"), dir, nodeModules, ctx);
+            runCommand(Arrays.asList("npm", "install", "--force", "--save-dev","node-gyp@latest"), dir, nodeModules, ctx);
 
             runCommand(npmInstallCommand, dir, nodeModules, ctx);
             Path out = runCommand(command, dir, nodeModules, ctx);
