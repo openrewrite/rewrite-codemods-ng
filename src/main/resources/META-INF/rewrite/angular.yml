@@ -19,7 +19,11 @@ name: org.openrewrite.codemods.migrate.angular.v17
 displayName: Update to Angular v17
 description: |
   Upgrade to Angular v17
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: angular.json
 recipeList:
+  - org.openrewrite.codemods.migrate.angular.v16
   - org.openrewrite.codemods.migrate.angular.ApplyAngularCLI:
       version: "17"
 ---
@@ -28,30 +32,46 @@ name: org.openrewrite.codemods.migrate.angular.v16
 displayName: Update to Angular v16
 description: |
   Upgrade to Angular v16
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: angular.json
 recipeList:
+  - org.openrewrite.codemods.migrate.angular.v15
   - org.openrewrite.codemods.migrate.angular.ApplyAngularCLI:
       version: "16"
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.directiveTransform
-displayName: Transform Angular directives
+name: org.openrewrite.codemods.migrate.angular.v15
+displayName: Update to Angular v15
 description: |
-  Transform Angular directives
+  Upgrade to Angular v15
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: angular.json
 recipeList:
-  - org.openrewrite.codemods.ApplyCodemod:
-      transform: "trefactor/src/directive-transform/index.ts"
-      codemodArgs:
-        - "--extensions=*.ts"
-        - "--parser=ts"
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.codemods.migrate.angular.decoratorTransform
-displayName: Transform Angular decorators
-description: |
-  Transform Angular decorators
-recipeList:
-  - org.openrewrite.codemods.ApplyCodemod:
-      transform: "trefactor/src/decorator-transform/module.ts"
-      codemodArgs:
-        - "--extensions=*.ts"
-        - "--parser=ts"
+  - org.openrewrite.codemods.migrate.angular.ApplyAngularCLI:
+      version: "15"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.directiveTransform
+# displayName: Transform Angular directives
+# description: |
+#   Transform Angular directives
+# recipeList:
+#   - org.openrewrite.codemods.ApplyCodemod:
+#       transform: "trefactor/src/directive-transform/index.ts"
+#       codemodArgs:
+#         - "--extensions=*.ts"
+#         - "--parser=ts"
+# ---
+# type: specs.openrewrite.org/v1beta/recipe
+# name: org.openrewrite.codemods.migrate.angular.decoratorTransform
+# displayName: Transform Angular decorators
+# description: |
+#   Transform Angular decorators
+# recipeList:
+#   - org.openrewrite.codemods.ApplyCodemod:
+#       transform: "trefactor/src/decorator-transform/module.ts"
+#       codemodArgs:
+#         - "--extensions=*.ts"
+#         - "--parser=ts"
