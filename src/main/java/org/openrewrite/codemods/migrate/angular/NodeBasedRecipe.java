@@ -330,6 +330,10 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .map(d -> d.resolve(prefix))
                 .map(d -> {
                     try {
+                        // if the directory already exists, return it
+                        if (Files.exists(d)) {
+                            return d.toRealPath();
+                        }
                         return Files.createDirectory(d).toRealPath();
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
