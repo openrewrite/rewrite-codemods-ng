@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@angular/cli": "17.2.0",
-    "@angular/core": "17.2.0",
-    "trefactor": "github:dagi12/angular-codemods"
+    "@angular/core": "17.2.0"
   }
 }
