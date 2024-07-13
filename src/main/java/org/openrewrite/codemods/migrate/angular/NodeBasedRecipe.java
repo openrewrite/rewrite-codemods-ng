@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.openrewrite.*;
 import org.openrewrite.internal.lang.Nullable;
+import org.openrewrite.nodejs.NpmExecutor;
+import org.openrewrite.nodejs.NpmExecutorExecutionContextView;
 import org.openrewrite.quark.Quark;
 import org.openrewrite.scheduling.WorkingDirectoryExecutionContextView;
 import org.openrewrite.text.PlainText;
@@ -32,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Collections.emptyList;
@@ -58,7 +59,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             @Override
             public @Nullable Tree visit(@Nullable Tree tree, ExecutionContext ctx) {
                 if (tree instanceof SourceFile && !(tree instanceof Quark) && !(tree instanceof ParseError) &&
-                        !tree.getClass().getName().equals("org.openrewrite.java.tree.J$CompilationUnit")) {
+                    !tree.getClass().getName().equals("org.openrewrite.java.tree.J$CompilationUnit")) {
                     SourceFile sourceFile = (SourceFile) tree;
                     String fileName = sourceFile.getSourcePath().getFileName().toString();
                     if (fileName.indexOf('.') > 0) {
@@ -82,7 +83,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
     public Collection<? extends SourceFile> generate(Accumulator acc, ExecutionContext ctx) {
         Path previous = ctx.getMessage(PREVIOUS_RECIPE);
         if (previous != null
-                && !Objects.equals(ctx.getMessage(FIRST_RECIPE), ctx.getCycleDetails().getRecipePosition())) {
+            && !Objects.equals(ctx.getMessage(FIRST_RECIPE), ctx.getCycleDetails().getRecipePosition())) {
             acc.copyFromPrevious(previous);
         }
 
@@ -104,6 +105,9 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             return;
         }
 
+        NpmExecutor npmShellExecutor = NpmExecutorExecutionContextView.view(ctx).getNpmExecutor().withConfigurationDirectory(dir);
+        npmShellExecutor.init();
+
         command.replaceAll(s -> s
                 .replace("${nodeModules}", nodeModules.toString())
                 .replace("${repoDir}", ".")
@@ -122,15 +126,21 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 command.add(0, "nvm-exec");
             }
 
+            Map<String, String> environment = new HashMap<>();
+            environment.put("NG_DISABLE_VERSION_CHECK", "1");
+            environment.put("NG_CLI_ANALYTICS", "false");
+            environment.put("NODE_PATH", nodeModules.toString());
+            environment.put("TERM", "dumb");
+
             // Install node-gyp to avoid issues with `npx`
-            runCommand(installNodeGypAndNan, dir, nodeModules, ctx);
+            npmShellExecutor.exec(installNodeGypAndNan, dir, environment, ctx);
             // install angular cli in the project
-            runCommand(prefixedInstallAngularCli, dir, nodeModules, ctx);
+            npmShellExecutor.exec(prefixedInstallAngularCli, dir, environment, ctx);
             // install the project dependencies
-            runCommand(localNpmInstallCommand, dir, nodeModules, ctx);
+            npmShellExecutor.exec(localNpmInstallCommand, dir, environment, ctx);
 
             // run `ng update` command
-            Path out = runCommand(command, dir, nodeModules, ctx);
+            Path out = npmShellExecutor.exec(command, dir, environment, ctx);
 
             for (Map.Entry<Path, Long> entry : acc.beforeModificationTimestamps.entrySet()) {
                 Path path = entry.getKey();
@@ -141,48 +151,9 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             processOutput(out, acc, ctx);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private Path runCommand(List<String> command, Path dir, Path nodeModules, ExecutionContext ctx) {
-        Path stdOut = null, stdErr = null;
-        try {
-            ProcessBuilder builder = new ProcessBuilder();
-            builder.command(command);
-            builder.directory(dir.toFile());
-            builder.environment().put("NG_DISABLE_VERSION_CHECK", "1");
-            builder.environment().put("NG_CLI_ANALYTICS", "false");
-            builder.environment().put("NODE_PATH", nodeModules.toString());
-            builder.environment().put("TERM", "dumb");
-
-            stdOut = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node",
-                    null);
-            stdErr = Files.createTempFile(WorkingDirectoryExecutionContextView.view(ctx).getWorkingDirectory(), "node",
-                    null);
-            builder.redirectOutput(ProcessBuilder.Redirect.to(stdOut.toFile()));
-            builder.redirectError(ProcessBuilder.Redirect.to(stdErr.toFile()));
-
-            Process process = builder.start();
-            process.waitFor(5, TimeUnit.MINUTES);
-            if (process.exitValue() != 0) {
-                String error = "Command failed:" + String.join(" ", command);
-                if (Files.exists(stdErr)) {
-                    error += "\n" + new String(Files.readAllBytes(stdErr));
-                }
-                throw new RuntimeException(error);
-            }
-            return stdOut;
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
-            if (stdOut != null) {
-                // noinspection ResultOfMethodCallIgnored
-                stdOut.toFile().delete();
-            }
-            if (stdErr != null) {
-                // noinspection ResultOfMethodCallIgnored
-                stdErr.toFile().delete();
-            }
+            // Restore npm settings
+            npmShellExecutor.postExec();
         }
     }
 

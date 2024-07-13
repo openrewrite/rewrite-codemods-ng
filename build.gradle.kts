@@ -10,10 +10,18 @@ group = "org.openrewrite.recipe"
 description = "Migrate JavaScript projects using codemods"
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
+
+val rewriteNodeJsVersion = if(project.hasProperty("releasing")) {
+    "latest.release"
+} else {
+    "latest.integration"
+}
+
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
 
     implementation("org.openrewrite:rewrite-core")
+    implementation("org.openrewrite.recipe:rewrite-nodejs:$rewriteNodeJsVersion")
 
     testImplementation("org.openrewrite:rewrite-test")
 }
