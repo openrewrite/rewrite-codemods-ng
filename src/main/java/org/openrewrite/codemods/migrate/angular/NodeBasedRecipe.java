@@ -129,6 +129,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             Map<String, String> environment = new HashMap<>();
             environment.put("NG_DISABLE_VERSION_CHECK", "1");
             environment.put("NG_CLI_ANALYTICS", "false");
+            environment.put("NODE_OPTIONS", "--max-old-space-size=1024");
             environment.put("NODE_PATH", nodeModules.toString());
             environment.put("TERM", "dumb");
 
