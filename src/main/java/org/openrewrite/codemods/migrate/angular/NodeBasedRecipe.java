@@ -115,7 +115,7 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                 .replace("${parser}", acc.parser()));
 
         String angularCliVersion = getAngularCliPackage(acc, ctx);
-        String npmrcPath =  new File(dir.toString(),".npmrc").getAbsolutePath();
+        String npmrcPath = new File(dir.toString(), ".npmrc").getAbsolutePath();
         List<String> installNodeGypAndNan = new ArrayList<>(Arrays.asList("npm", "install", "--userconfig", npmrcPath, "--prefix", nodeModules.toString(), "--force", "--ignore-script", "node-gyp@10", "nan@2"));
         List<String> prefixedInstallAngularCli = new ArrayList<>(Arrays.asList("npm", "install", "--userconfig", npmrcPath, "--prefix", nodeModules.toString(), "--force", "--ignore-scripts", angularCliVersion));
         List<String> localNpmInstallCommand = new ArrayList<>(Arrays.asList("npm", "install", "--force", "--ignore-scripts"));
