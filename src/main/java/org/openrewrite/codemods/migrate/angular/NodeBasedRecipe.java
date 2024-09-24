@@ -97,7 +97,13 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
     private void runNode(Accumulator acc, ExecutionContext ctx) {
         Path dir = acc.getDirectory();
-        // Path nodeModules = RecipeResources.from(getClass()).init(ctx);
+
+        Path angularJsonPath = dir.resolve("angular.json");
+        // Check if the file exists
+        if (!Files.exists(angularJsonPath)) {
+            throw new RuntimeException("angular.json file not found in the project directory: " + dir);
+        }
+
         Path nodeModules = createDirectory(ctx, "recipe-run-modules");
         boolean useNvmExec = useNvmExec(acc, ctx);
         List<String> command = getNpmCommand(acc, ctx);
