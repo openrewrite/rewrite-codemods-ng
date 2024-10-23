@@ -17,9 +17,9 @@ package org.openrewrite.codemods.migrate.angular;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Option;
-import org.openrewrite.internal.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +55,10 @@ public class ApplyAngularCLI extends NodeBasedRecipe {
         command.add("--force");
         command.add("--verbose");
         command.add("--allow-dirty");
-        
+
         // Replace `${version}` with the `version` value in each command item
         command.replaceAll(s -> s.replace("${version}", Optional.ofNullable(version).orElse("latest")));
-        
+
         return command;
     }
 
