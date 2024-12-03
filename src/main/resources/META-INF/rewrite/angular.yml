@@ -15,6 +15,24 @@
 #
 ---
 type: specs.openrewrite.org/v1beta/recipe
+name: org.openrewrite.codemods.migrate.angular.v19
+displayName: Update to Angular v19
+description: |
+  Upgrade to Angular v19
+recipeList:
+  - org.openrewrite.codemods.migrate.angular.ApplyAngularCLI:
+      version: "19"
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.openrewrite.codemods.migrate.angular.v18
+displayName: Update to Angular v18
+description: |
+  Upgrade to Angular v18
+recipeList:
+  - org.openrewrite.codemods.migrate.angular.ApplyAngularCLI:
+      version: "18"
+---
+type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.codemods.migrate.angular.v17
 displayName: Update to Angular v17
 description: |
