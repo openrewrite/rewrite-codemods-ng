@@ -28,6 +28,7 @@ import java.util.Optional;
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class ApplyAngularCLI extends NodeBasedRecipe {
+
     @Option(displayName = "Angular version",
             description = "Which version of Angular to upgrade",
             example = "17")
