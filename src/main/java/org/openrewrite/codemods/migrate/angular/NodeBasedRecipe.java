@@ -294,15 +294,6 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
             return directory.resolve(tree.getSourcePath());
         }
 
-        public <T> void putData(String key, T value) {
-            data.put(key, value);
-        }
-
-        @Nullable
-        public <T> T getData(String key) {
-            // noinspection unchecked
-            return (T) data.get(key);
-        }
     }
 
     protected static Path createDirectory(ExecutionContext ctx, String prefix) {
