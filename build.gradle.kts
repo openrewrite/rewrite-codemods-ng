@@ -7,7 +7,7 @@ plugins {
 
 // Set as appropriate for your organization
 group = "org.openrewrite.recipe"
-description = "Migrate JavaScript projects using codemods"
+description = "Migrate Angular projects using codemods"
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 
@@ -96,9 +96,9 @@ publishing {
                 }
             }
             scm {
-                connection.set("scm:git:git://github.com/moderneinc/rewrite-codemods.git")
-                developerConnection.set("scm:git:ssh://github.com:moderneinc/rewrite-codemods.git")
-                url.set("https://github.com/moderneinc/rewrite-codemods/tree/main")
+                connection.set("scm:git:git://github.com/moderneinc/rewrite-codemods-ng.git")
+                developerConnection.set("scm:git:ssh://github.com:moderneinc/rewrite-codemods-ng.git")
+                url.set("https://github.com/moderneinc/rewrite-codemods-ng/tree/main")
             }
         }
     }

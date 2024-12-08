@@ -15,10 +15,7 @@
  */
 package org.openrewrite.codemods.migrate.angular;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
 import org.openrewrite.nodejs.NpmExecutor;
@@ -74,7 +71,12 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
                         // yaml?
                         acc.writeSource(sourceFile);
                     }
+
+                    if (sourceFile.getSourcePath().endsWith("angular.json")) {
+                        acc.setAngularJsonPath(sourceFile.getSourcePath());
+                    }
                 }
+
                 return tree;
             }
         };
@@ -97,11 +99,15 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
 
     private void runNode(Accumulator acc, ExecutionContext ctx) {
         Path dir = acc.getDirectory();
-
-        Path angularJsonPath = dir.resolve("angular.json");
+        Path angularJsonPath = acc.getAngularJsonPath();
         // Check if the file exists
-        if (!Files.exists(angularJsonPath)) {
+        if (angularJsonPath == null || !Files.exists(dir.resolve(angularJsonPath))) {
             throw new RuntimeException("angular.json file not found in the project directory: " + dir);
+        }
+
+        Path angularJsonDir = angularJsonPath.getParent();
+        if (angularJsonDir != null) {
+            dir = dir.resolve(angularJsonDir);
         }
 
         Path nodeModules = createDirectory(ctx, "recipe-run-modules");
@@ -219,6 +225,11 @@ public abstract class NodeBasedRecipe extends ScanningRecipe<NodeBasedRecipe.Acc
         final Set<Path> modified = new LinkedHashSet<>();
         final Map<String, AtomicInteger> extensionCounts = new HashMap<>();
         final Map<String, Object> data = new HashMap<>();
+
+        @Getter
+        @Setter
+        @Nullable
+        Path angularJsonPath;
 
         public void copyFromPrevious(Path previous) {
             try {
